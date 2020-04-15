@@ -4,7 +4,10 @@
 <h1>Daftar Mahasiswa</h1>
 <a href="{{ route('biodata.create') }}" class="btn btn-primary">
 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-create</a>
+create</a></p>
+
+<a href="/biodata-mahasiswa/export_excel" class="btn btn-success my-3" target="_blank">EXPORT EXCEL</a></p>
+
 <table class ="table table-striped  table-hover" id="datatable">
 	<thead>
 		<tr>
@@ -16,9 +19,10 @@ create</a>
 		</tr>
 	</thead>
 	<tbody>
+		@php $i=1 @endphp
 		@forelse($mahasiswa as $data)
 		<tr>
-			<td>{{ $data->id }}</td>
+			<td>{{ $data->id ++}}</td>
 			<td>{{ $data->name }}</td>
 			<td>{{ $data->nim }}</td>
 			<td>

@@ -23,6 +23,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::get('biodata-mahasiswa/export_excel', 'BiodataController@export_excel');
+
 Route::get("/biodata-mahasiswa", "BiodataController@index")
 ->name("biodata.index");
 Route::get("/biodata-mahasiswa/{id}/detail", "BiodataController@show")

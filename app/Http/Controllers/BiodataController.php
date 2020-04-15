@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\BiodataMahasiswa;
-use Illuminate\Support\Fcades\Validator;
-use App\Http\Requests\UpdateBiodata;
-use DB;
+use Illuminate\Support\Facades\Validator;
+use App\Exports\BiodataExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\Controller;
 
 class BiodataController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +19,8 @@ class BiodataController extends Controller
      */
     public function index()
     {
-        $mahasiswa = BiodataMahasiswa::all(); //menyeleksi data dari DB
-        return view("biodata.index", compact("mahasiswa")); //proses passing data dr controller ke view
+        $mahasiswa = BiodataMahasiswa::all();
+        return view("biodata.index", compact("mahasiswa"));
     }
 
     /**
@@ -28,7 +30,6 @@ class BiodataController extends Controller
      */
     public function create()
     {
-        //
         return view("biodata.create");
     }
 
@@ -40,19 +41,8 @@ class BiodataController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
-       // dd($request->file("photo"));
-        $filePath = $request->file("photo")->store("public");
-        // return $filePath;
-
-        DB::table('biodata_mahasiswa')->insert([
-            'name' => $request->name,
-            'nim' => $request->nim,
-            'address' => $request->address,
-            'photo' => $filepath]);// menyimpan filepath yang di dapatkan
-            // 'create_at' => time
-            return redirect()->route("biodata.index");
-        
+        $filePath = $request->file("photo")->store("photo-mhs");
+        return $filePath;
     }
 
     /**
@@ -64,11 +54,7 @@ class BiodataController extends Controller
     public function show($id)
     {
         $data = BiodataMahasiswa::find($id);
-        return view("biodata.show", compact("data"));  
-        //where("id", $id)->first();
-
-        // untuk melihat query
-         dd($data->toSQL());
+        return view("biodata.show", compact("data"));
     }
 
     /**
@@ -80,35 +66,31 @@ class BiodataController extends Controller
     public function edit($id)
     {
         $data = BiodataMahasiswa::find($id);
-        return view("biodata.edit", compact("data"));   
+        return view("biodata.edit", compact("data"));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateBiodata  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBiodata $request, $id)
+    public function update(Request $request, $id)
     {
+        $validation = Validator::make($request->all(), [
+            "name" => "string|min:3|max:10|alpha",
+            "nim" => "string|min:8",
+            "alamat" => "string|min:10",
+        ]);
 
-        // nam, NIM, alamat
-        // special characters :!@#
-        // $validation = validation::make($request->all(), [
-        //     "name" => "string|min:3|max:10|alpha",
-        //     "nim" => "string|min:8",
-        //     "alamat" => "string|min:10",
-        // ]);
+        if ($validation->fails()) {
+            return redirect()->back()->withErrors($validation)->withInput();
+        }
 
-        //  if ($validation->fails()) {
-        //     return redirect()->back()->withErrors($validation)->withInput();
-        // }
-
-         BiodataMahasiswa::where("id", $id)->update($request->except("_token"));
+        BiodataMahasiswa::where("id", $id)->update($request->except("_token", "_method"));
         return redirect()->route("biodata.index");
-    
-     }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -121,4 +103,10 @@ class BiodataController extends Controller
         BiodataMahasiswa::where("id", $id)->delete();
         return redirect()->route("biodata.index");
     }
+
+    public function export_excel()
+    {
+        return Excel::download(new BiodataExport, 'Biodata_Mahasiswa.xlsx');
+    }
+
 }
