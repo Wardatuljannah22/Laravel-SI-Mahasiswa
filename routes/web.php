@@ -23,6 +23,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get("/mail/send", "MailController@send");
 
 Route::get('biodata-mahasiswa/export_excel', 'BiodataController@export_excel');
 
