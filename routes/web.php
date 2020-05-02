@@ -20,7 +20,7 @@ Route::get("/logout", "LoginController@logout")->name("logout");
 Route::resource("biodata", "BiodataController")->middleware("web");
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('dashboard');
 });
 
 Route::get("/mail/send", "MailController@send");

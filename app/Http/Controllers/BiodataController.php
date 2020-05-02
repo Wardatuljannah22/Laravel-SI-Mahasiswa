@@ -22,23 +22,19 @@ class BiodataController extends Controller
    
     public function index(Builder $builder)
     {
-        // $mahasiswa = BiodataMahasiswa::all();
-        // return view("biodata.index", compact("mahasiswa"));
-    
-       
         if (request()->ajax()) {
             return DataTables::of(BiodataMahasiswa::query())->editColumn("nim", function ($data) {
                 return "<strong><i>" . $data->nim . "</i></strong>";
             })->addColumn("action", function ($data) {
                 return "
                     <a href='" . route("biodata.show", ["id" => $data->id]) . "' class='btn btn-success'>Detail</a>
-                    <a class='btn btn-warning'>Edit</a>
-                    <a class='btn btn-danger'>Delete</a>
+                    <a href='" . route("biodata.edit", ["id"=> $data->id]) . "' class= 'btn btn-warning'>Edit</a>
+                    <a href='" . route("biodata.destroy", ["id"=> $data->id]) . "' class= ' btn btn-danger'>Delete</a>
                 ";
             })->rawColumns(["nim", "action"])->addIndexColumn()->toJson();
-    }
+        }
 
-    $html = $builder->columns([
+        $html = $builder->columns([
             ["data" => "DT_RowIndex", "name" => "#", "title" => "#", "defaultContent" => "", "orderable" => false],
             ["data" => "name", "name" => "name", "title" => "NAMA"],
             ["data" => "nim", "name" => "nim", "title" => "NIM"],
@@ -54,10 +50,9 @@ class BiodataController extends Controller
                 'printable'      => true,
             ],
         ]);
+
         return view("biodata.index", compact("html"));
-
     }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -77,7 +72,16 @@ class BiodataController extends Controller
     public function store(Request $request)
     {
         $filePath = $request->file("photo")->store("photo-mhs");
-        return $filePath;
+        
+        BiodataMahasiswa::create([
+            'name' => $request->name,
+            'nim' => $request->nim,
+            'address' => $request->address,
+            'photo' => $filePath
+        ]);
+
+        return redirect()->route("biodata.index");
+        
     }
 
     /**

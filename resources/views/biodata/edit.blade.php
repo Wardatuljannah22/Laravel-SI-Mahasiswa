@@ -1,6 +1,27 @@
-@extends("layout")
+@extends("layout.app")
 
 @section("content")
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Daftar Mahasiswa</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Kelola Mahasiswa</a></li>
+              <li class="breadcrumb-item active">Daftar Mahasiswa</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
 
     @if($errors->any())
         <div class="alert alert-danger alert-dismissable">
@@ -31,7 +52,7 @@
             <input type="text" class="form-control" name="nim" value="{{ $data->nim }}">
         </div>
         <div class="form-group">
-            <label class="control-label">Aalamat</label>
+            <label class="control-label">Alamat</label>
             <textarea name="address" rows="5" class="form-control">{{ $data->address }}</textarea>
         </div>
         <div class="form-group">
